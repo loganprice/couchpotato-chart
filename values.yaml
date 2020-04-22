@@ -12,6 +12,20 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+couchpotato:
+  # User and group to run container as See https://github.com/linuxserver/docker-couchpotato#user--group-identifiers for information
+  puid: 1000
+  pgid: 1000
+  # Timezone in which you are located See options at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  timezone: America/Chicago
+  # Configures the config.ini with all preconfigured values that you want. See #TBD for all the different configuration options you
+  # if you do not supply values here it will generate one for you on first boot
+  settings:
+    # core:
+    #   port: 5050
+    #   url_base: ""
+    #   show_wizard: True
+
 service:
   type: ClusterIP
   port: 80

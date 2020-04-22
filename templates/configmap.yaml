@@ -1,0 +1,17 @@
+{{- if .Values.couchpotato.settings -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "couchpotato.fullname" . }}
+  labels:
+    {{- include "couchpotato.labels" . | nindent 4 }}
+data:
+  config.ini: |
+    {{- range $header, $value := .Values.couchpotato.settings }}
+    [{{ $header }}]
+    {{- range $key, $value := $value }}
+    {{ $key }} = {{ $value }}
+    {{- end }}
+    {{ printf "" }}
+    {{- end }}
+{{- end -}}
