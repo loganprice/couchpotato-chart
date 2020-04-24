@@ -29,9 +29,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              {{- if .Values.couchpotato.settings  -}}
-              containerPort: {{ .Values.couchpotato.settings.core.port | default 5050 }}
-              {{- end }}
+              containerPort: {{ .Values.couchpotato.port | default 5050 }}
               protocol: TCP
           livenessProbe:
             httpGet:
@@ -43,6 +41,18 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      {{- if or .Values.persistance.enabled .Values.couchpotato.settings }}
+      volumes:
+        {{- if .Values.couchpotato.settings }}
+        - name: config.ini
+          configMap:
+            name: {{ include "couchpotato.fullname" . }}
+            items:
+              - key: config.ini
+                path: config.ini
+        {{- end}}
+      {{- toYaml .Values.persistance.volumes | nindent 8 }}  
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

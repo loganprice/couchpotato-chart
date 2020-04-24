@@ -8,9 +8,7 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      {{- if .Values.couchpotato.settings  -}}
-      targetPort: {{ .Values.couchpotato.settings.core.port | default 5050 }}
-      {{- end }}
+      targetPort: {{ .Values.couchpotato.port | default 5050 }}
       protocol: TCP
       name: web
   selector:

@@ -20,6 +20,7 @@ couchpotato:
   timezone: America/Chicago
   # Configures the config.ini with all preconfigured values that you want. See #TBD for all the different configuration options you
   # if you do not supply values here it will generate one for you on first boot
+  # port: 5050
   settings:
     # core:
     #   port: 5050
@@ -74,6 +75,35 @@ resources: {}
   # requests:
   #   cpu: 100m
   #   memory: 128Mi
+persistance:
+  enabled: true
+  volumes:
+    - name: config
+      hostPath:
+        path: /shared/config/couchpotato
+        type: DirectoryOrCreate
+    - name: downloads
+      hostPath:
+        path: /shared/downloads
+        type: DirectoryOrCreate
+    - name: torrents
+      hostPath:
+        path: /shared/torrents
+        type: DirectoryOrCreate
+    - name: movies
+      hostPath:
+        path: /shared/media/movies
+        type: DirectoryOrCreate
+
+  volumeMounts:
+    - name: config
+      mountPath: /config
+    - name: downloads
+      mountPath: /config
+    - name: config
+      mountPath: /config
+    - name: torrents
+      mountPath: /torrents
 
 nodeSelector: {}
 
