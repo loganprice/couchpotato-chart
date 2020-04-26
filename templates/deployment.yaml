@@ -21,12 +21,34 @@ spec:
       serviceAccountName: {{ include "couchpotato.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if and .Values.couchpotato.createInitialConfig .Values.couchpotato.settings }}
+      initContainers:
+        - name: init-config
+          image: busybox
+          {{- if or .Values.persistance.enabled .Values.couchpotato.settings }}
+          securityContext:
+            runAsUser: 1000
+          volumeMounts:
+            {{- if .Values.couchpotato.settings }}
+            - name: settings
+              mountPath: /tmp
+            {{- end }}
+            {{- toYaml .Values.persistance.volumeMounts | nindent 12 }}
+          {{- end }}
+          command: ['sh', '-c']
+          args: ['cp /tmp/config.ini /config']
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: PUID
+              value: {{ .Values.couchpotato.puid | quote }}
+            - name: PGID
+              value: {{ .Values.couchpotato.pgid | quote }}
           ports:
             - name: http
               containerPort: {{ .Values.couchpotato.port | default 5050 }}
@@ -39,12 +61,16 @@ spec:
             httpGet:
               path: /
               port: http
+          {{- if .Values.persistance.enabled }}
+          volumeMounts:
+            {{- toYaml .Values.persistance.volumeMounts | nindent 12 }}
+          {{- end}}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- if or .Values.persistance.enabled .Values.couchpotato.settings }}
       volumes:
         {{- if .Values.couchpotato.settings }}
-        - name: config.ini
+        - name: settings
           configMap:
             name: {{ include "couchpotato.fullname" . }}
             items:

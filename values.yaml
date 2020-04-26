@@ -21,7 +21,8 @@ couchpotato:
   # Configures the config.ini with all preconfigured values that you want. See #TBD for all the different configuration options you
   # if you do not supply values here it will generate one for you on first boot
   # port: 5050
-  settings:
+  createInitialConfig: true
+  settings: {}
     # core:
     #   port: 5050
     #   url_base: ""
@@ -53,16 +54,16 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name:
 
-podSecurityContext: {}
-  # fsGroup: 2000
+podSecurityContext: {} 
+  # fsGroup: 0
 
-securityContext: {}
+securityContext:  {}
   # capabilities:
   #   drop:
   #   - ALL
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
-  # runAsUser: 1000
+  # runAsUser: 0
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -75,35 +76,14 @@ resources: {}
   # requests:
   #   cpu: 100m
   #   memory: 128Mi
-persistance:
-  enabled: true
-  volumes:
-    - name: config
-      hostPath:
-        path: /shared/config/couchpotato
-        type: DirectoryOrCreate
-    - name: downloads
-      hostPath:
-        path: /shared/downloads
-        type: DirectoryOrCreate
-    - name: torrents
-      hostPath:
-        path: /shared/torrents
-        type: DirectoryOrCreate
-    - name: movies
-      hostPath:
-        path: /shared/media/movies
-        type: DirectoryOrCreate
 
-  volumeMounts:
-    - name: config
-      mountPath: /config
-    - name: downloads
-      mountPath: /config
-    - name: config
-      mountPath: /config
-    - name: torrents
-      mountPath: /torrents
+persistance:
+  enabled: false
+  # Persitances is used to create the volumes with that couchpotato 
+  # needs to persistance data. The volumes couchpotato uses are:
+  # - /Downloads : this directory is used to store .torrent and .nzb files
+  # - /Movies : this directory is used to store processed movies
+  # - /Config : this directory is used to store config, logs, etc
 
 nodeSelector: {}
 
